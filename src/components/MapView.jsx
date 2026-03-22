@@ -3,14 +3,14 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// ADD THESE IMPORTS
 import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-//FIX LEAFLET DEFAULT ICON
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
 });
@@ -47,25 +47,23 @@ function MapView({ places = [], selectedPlace = null, onSelectPlace = () => {} }
       <FlyToPlace selectedPlace={selectedPlace} />
 
       {Array.isArray(places) &&
-        places
-          .filter(Boolean)
-          .map((place) => (
-            <Marker
-              key={place.id}
-              position={[place.latitude, place.longitude]}
-              eventHandlers={{
-                click: () => onSelectPlace(place),
-              }}
-            >
-              <Popup>
-                <strong>{place.name}</strong>
-                <br />
-                {place.category}
-                <br />
-                {place.region}
-              </Popup>
-            </Marker>
-          ))}
+        places.filter(Boolean).map((place) => (
+          <Marker
+            key={place.id}
+            position={[place.latitude, place.longitude]}
+            eventHandlers={{
+              click: () => onSelectPlace(place),
+            }}
+          >
+            <Popup>
+              <strong>{place.name}</strong>
+              <br />
+              {place.category}
+              <br />
+              {place.region}
+            </Popup>
+          </Marker>
+        ))}
     </MapContainer>
   );
 }
