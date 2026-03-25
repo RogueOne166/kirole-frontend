@@ -16,11 +16,11 @@ function PlaceCard({ place, onClick, isSelected }) {
       }
 
       try {
-        const res = await api.get("/users/favorites");
-        const favorites = Array.isArray(res.data) ? res.data : res.data.data || [];
-        setFavorite(favorites.some((item) => item.id === place.id));
+        const res = await api.get("/favorites");
+        const favoritePlaces = res.data.places || [];
+        setFavorite(favoritePlaces.some((item) => item.id === place.id));
       } catch (error) {
-        console.error("Error checking favorite:", error);
+        console.error("Error checking favorite:", error.response?.data || error);
       }
     };
 
@@ -42,14 +42,14 @@ function PlaceCard({ place, onClick, isSelected }) {
 
     try {
       if (favorite) {
-        await api.delete(`/users/favorites/${place.id}`);
+        await api.delete(`/favorites/places/${place.id}`);
         setFavorite(false);
       } else {
-        await api.post(`/users/favorites/${place.id}`);
+        await api.post(`/favorites/places/${place.id}`);
         setFavorite(true);
       }
     } catch (error) {
-      console.error("Error updating favorite:", error);
+      console.error("Error updating favorite:", error.response?.data || error);
     }
   };
 
