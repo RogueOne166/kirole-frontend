@@ -467,7 +467,7 @@ a {
 }
 
 .detail-description {
-   color: rgba(255, 255, 255, 0.9);
+   color: var(--text-secondary);
   font-size: 1.05rem;
 }
 
@@ -577,7 +577,7 @@ a {
   border-radius: 16px;
   padding: 18px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.85);
+  color: white;
 }
 
 @media (max-width: 992px) {
