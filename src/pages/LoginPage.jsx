@@ -32,9 +32,14 @@ function LoginPage() {
     try {
       const res = await api.post("/auth/login", form);
       login(res.data);
-      navigate("/");
+
+      if (res.data.user?.role === "organizer") {
+        navigate("/organizer/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed.");
+      setError(err.response?.data?.error || "Login failed.");
     } finally {
       setSubmitting(false);
     }

@@ -13,15 +13,19 @@ function SignupPage() {
     name: "",
     email: "",
     password: "",
+    role: "user",
+    companyName: "",
   });
 
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setForm((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
@@ -31,11 +35,28 @@ function SignupPage() {
     setSubmitting(true);
 
     try {
-      const res = await api.post("/auth/signup", form);
+      const payload = {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+      };
+
+      if (form.role === "organizer") {
+        payload.companyName = form.companyName;
+      }
+
+      const res = await api.post("/auth/signup", payload);
+
       login(res.data);
-      navigate("/");
+
+      if (res.data.user?.role === "organizer") {
+        navigate("/organizer/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
-      setError(err.response?.data?.message || "Signup failed.");
+      setError(err.response?.data?.error || "Signup failed.");
     } finally {
       setSubmitting(false);
     }
@@ -48,7 +69,9 @@ function SignupPage() {
       <main className="main-content page-top-spacing">
         <div className="auth-card">
           <h1 className="auth-title">Create account</h1>
-          <p className="auth-subtitle">Join KiRole and save your favorite places.</p>
+          <p className="auth-subtitle">
+            Join KiRole as a user or as an event organizer.
+          </p>
 
           <form className="auth-form" onSubmit={handleSubmit}>
             <input
@@ -77,6 +100,27 @@ function SignupPage() {
               onChange={handleChange}
               required
             />
+
+            <select
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              required
+            >
+              <option value="user">Normal User</option>
+              <option value="organizer">Company / Organizer</option>
+            </select>
+
+            {form.role === "organizer" && (
+              <input
+                type="text"
+                name="companyName"
+                placeholder="Company name"
+                value={form.companyName}
+                onChange={handleChange}
+                required
+              />
+            )}
 
             {error && <p className="auth-error">{error}</p>}
 

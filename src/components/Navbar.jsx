@@ -1,14 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, isOrganizer } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     setMenuOpen(false);
+    navigate("/");
   };
 
   const closeMenu = () => {
@@ -23,6 +25,7 @@ function Navbar() {
         </Link>
       </div>
 
+      {/* DESKTOP */}
       <div className="navbar-links navbar-links-desktop">
         <Link to="/explore">Explore</Link>
         <Link to="/featured">Featured</Link>
@@ -31,7 +34,15 @@ function Navbar() {
 
         {isAuthenticated ? (
           <>
+            {/*  organizer-only button */}
+            {isOrganizer && (
+              <Link to="/organizer/dashboard" className="navbar-dashboard-btn">
+                Dashboard
+              </Link>
+            )}
+
             <span className="navbar-user">Hi, {user?.name}</span>
+
             <button className="navbar-auth-btn" onClick={handleLogout}>
               Logout
             </button>
@@ -44,6 +55,7 @@ function Navbar() {
         )}
       </div>
 
+      {/* MOBILE BUTTON */}
       <button
         className="mobile-menu-btn"
         onClick={() => setMenuOpen((prev) => !prev)}
@@ -52,6 +64,7 @@ function Navbar() {
         ☰
       </button>
 
+      {/* MOBILE MENU */}
       {menuOpen && (
         <div className="mobile-menu">
           <Link to="/explore" onClick={closeMenu}>
@@ -69,8 +82,21 @@ function Navbar() {
 
           {isAuthenticated ? (
             <>
-              <span className="navbar-user mobile-user">Hi, {user?.name}</span>
-              <button className="navbar-auth-btn mobile-auth-btn" onClick={handleLogout}>
+              {/*  organizer dashboard in mobile */}
+              {isOrganizer && (
+                <Link to="/organizer/dashboard" onClick={closeMenu}>
+                  Dashboard
+                </Link>
+              )}
+
+              <span className="navbar-user mobile-user">
+                Hi, {user?.name}
+              </span>
+
+              <button
+                className="navbar-auth-btn mobile-auth-btn"
+                onClick={handleLogout}
+              >
                 Logout
               </button>
             </>

@@ -20,6 +20,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (data) => {
+    if (!data?.token || !data?.user) return;
+
     setUser(data.user);
     setToken(data.token);
 
@@ -35,6 +37,9 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("user");
   };
 
+  const isOrganizer = user?.role === "organizer";
+  const isAdmin = user?.role === "admin";
+
   return (
     <AuthContext.Provider
       value={{
@@ -43,6 +48,8 @@ export function AuthProvider({ children }) {
         login,
         logout,
         isAuthenticated: !!token,
+        isOrganizer,
+        isAdmin,
         loading,
       }}
     >
