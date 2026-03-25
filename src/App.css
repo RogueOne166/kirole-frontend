@@ -383,7 +383,7 @@ a {
 }
 
 .back-link {
-  color: var(--primary);
+  color: white;
   font-weight: 600;
 }
 
@@ -467,7 +467,7 @@ a {
 }
 
 .detail-description {
-  color: var(--text-secondary);
+   color: rgba(255, 255, 255, 0.9);
   font-size: 1.05rem;
 }
 
@@ -577,7 +577,7 @@ a {
   border-radius: 16px;
   padding: 18px;
   text-align: center;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 @media (max-width: 992px) {
