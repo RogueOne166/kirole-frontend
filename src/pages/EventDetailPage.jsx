@@ -16,12 +16,12 @@ function EventDetailPage() {
       try {
         const [eventRes, placesRes] = await Promise.all([
           api.get(`/events/${id}`),
-          api.get("/places?limit=100"),
+          api.get("/places"),
         ]);
 
         const placesData = Array.isArray(placesRes.data)
           ? placesRes.data
-          : placesRes.data.data || [];
+          : placesRes.data?.data || [];
 
         setEvent(eventRes.data || null);
         setPlaces(placesData);
@@ -41,8 +41,7 @@ function EventDetailPage() {
     if (event.placeId) {
       return (
         places.find(
-          (place) =>
-            place._id === event.placeId || String(place._id) === String(event.placeId)
+          (place) => String(place._id) === String(event.placeId)
         ) || null
       );
     }
@@ -52,6 +51,15 @@ function EventDetailPage() {
         places.find(
           (place) =>
             place.name?.toLowerCase() === event.location?.toLowerCase()
+        ) || null
+      );
+    }
+
+    if (event.placeName) {
+      return (
+        places.find(
+          (place) =>
+            place.name?.toLowerCase() === event.placeName?.toLowerCase()
         ) || null
       );
     }
@@ -81,7 +89,7 @@ function EventDetailPage() {
       ? [
           {
             _id: event._id,
-            name: event.title,
+            name: event.title || event.name,
             category: event.category || "event",
             region: event.region || "",
             latitude: event.latitude,
@@ -107,10 +115,10 @@ function EventDetailPage() {
 
         <section className="detail-hero">
           <div className="detail-image">
-            <img src={event.image} alt={event.title} />
+            <img src={event.image} alt={event.title || event.name} />
             <div className="detail-image-overlay">
               <span className="detail-badge">{event.category || "event"}</span>
-              <h1 className="detail-title">{event.title}</h1>
+              <h1 className="detail-title">{event.title || event.name}</h1>
               <div className="detail-meta">
                 {event.region && <span>📍 {event.region}</span>}
                 {event.date && <span>📅 {event.date}</span>}

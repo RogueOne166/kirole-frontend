@@ -24,10 +24,20 @@ function HomePage() {
         const placesRes = await api.get("/places");
         const eventsRes = await api.get("/events");
 
-        setPlaces(placesRes.data.data);
-        setEvents(eventsRes.data.data);
+        const placesData = Array.isArray(placesRes.data)
+          ? placesRes.data
+          : placesRes.data?.data || [];
+
+        const eventsData = Array.isArray(eventsRes.data)
+          ? eventsRes.data
+          : eventsRes.data?.data || [];
+
+        setPlaces(placesData);
+        setEvents(eventsData);
       } catch (error) {
         console.error("Error fetching homepage data:", error);
+        setPlaces([]);
+        setEvents([]);
       }
     };
 
@@ -35,11 +45,11 @@ function HomePage() {
   }, []);
 
   const categories = useMemo(() => {
-    return [...new Set(places.map((place) => place.category))];
+    return [...new Set(places.map((place) => place.category).filter(Boolean))];
   }, [places]);
 
   const regions = useMemo(() => {
-    return [...new Set(places.map((place) => place.region))];
+    return [...new Set(places.map((place) => place.region).filter(Boolean))];
   }, [places]);
 
   const filteredPlaces = useMemo(() => {
@@ -50,8 +60,9 @@ function HomePage() {
       const matchesRegion =
         selectedRegion === "All" || place.region === selectedRegion;
 
-      const matchesSearch =
-        place.name.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch = (place.name || "")
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
       return matchesCategory && matchesRegion && matchesSearch;
     });
@@ -77,11 +88,11 @@ function HomePage() {
             subtitle="Browse the island through the interactive map."
           />
           <div className="map-section">
-            <MapView 
-            	places={filteredPlaces} 
-            	selectedPlace={selectedPlace}
-            	onSelectPlace={setSelectedPlace}
-             />
+            <MapView
+              places={filteredPlaces}
+              selectedPlace={selectedPlace}
+              onSelectPlace={setSelectedPlace}
+            />
           </div>
         </section>
 
@@ -118,9 +129,9 @@ function HomePage() {
             {featuredPlaces.length > 0 ? (
               featuredPlaces.map((place) => (
                 <PlaceCard
-                  key={place.id}
+                  key={place._id}
                   place={place}
-                  isSelected={selectedPlace?.id === place.id}
+                  isSelected={selectedPlace?._id === place._id}
                   onClick={() => setSelectedPlace(place)}
                 />
               ))
@@ -136,9 +147,13 @@ function HomePage() {
             subtitle="What’s happening around Mauritius."
           />
           <div className="card-grid">
-            {upcomingEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.map((event) => (
+                <EventCard key={event._id} event={event} />
+              ))
+            ) : (
+              <p>No upcoming events found.</p>
+            )}
           </div>
         </section>
       </main>

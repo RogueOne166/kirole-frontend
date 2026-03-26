@@ -12,9 +12,14 @@ function FeaturedPage() {
     const fetchPlaces = async () => {
       try {
         const res = await api.get("/places");
-        setPlaces(res.data.data);
+        const placesData = Array.isArray(res.data)
+          ? res.data
+          : res.data?.data || [];
+
+        setPlaces(placesData);
       } catch (error) {
         console.error("Error fetching featured places:", error);
+        setPlaces([]);
       }
     };
 
@@ -37,9 +42,13 @@ function FeaturedPage() {
 
         <section className="section">
           <div className="card-grid">
-            {featuredPlaces.map((place) => (
-              <PlaceCard key={place.id} place={place} />
-            ))}
+            {featuredPlaces.length > 0 ? (
+              featuredPlaces.map((place) => (
+                <PlaceCard key={place._id} place={place} />
+              ))
+            ) : (
+              <p>No featured places found.</p>
+            )}
           </div>
         </section>
       </main>

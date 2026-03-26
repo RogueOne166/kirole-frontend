@@ -20,7 +20,7 @@ function ExplorePage() {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const res = await api.get("/places?limit=100");
+        const res = await api.get("/places");
         setPlaces(Array.isArray(res.data) ? res.data : res.data.data || []);
       } catch (error) {
         console.error("Error fetching places:", error);
