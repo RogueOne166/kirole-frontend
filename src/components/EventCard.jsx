@@ -4,18 +4,18 @@ function EventCard({ event }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/event/${event.id}`);
+    navigate(`/event/${event._id}`);
   };
 
   return (
     <div className="card place-card" onClick={handleClick}>
       <div className="card-image">
-        <img src={event.image} alt={event.name || event.title} />
+        <img src={event.image} alt={event.title} />
       </div>
 
       <div className="card-content">
         <div className="card-top">
-          <h3>{event.name || event.title}</h3>
+          <h3>{event.title}</h3>
           <span className="badge">{event.category || "event"}</span>
         </div>
 
@@ -27,7 +27,7 @@ function EventCard({ event }) {
           {event.price && <span>💰 {event.price}</span>}
         </div>
 
-        {event.audience && (
+        {event.audience?.length > 0 && (
           <div className="audience">
             {event.audience.map((item, index) => (
               <span className="chip" key={index}>

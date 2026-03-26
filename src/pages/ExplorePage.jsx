@@ -32,11 +32,11 @@ function ExplorePage() {
   }, []);
 
   const categories = useMemo(() => {
-    return [...new Set(places.map((place) => place.category))];
+    return [...new Set(places.map((place) => place.category).filter(Boolean))];
   }, [places]);
 
   const regions = useMemo(() => {
-    return [...new Set(places.map((place) => place.region))];
+    return [...new Set(places.map((place) => place.region).filter(Boolean))];
   }, [places]);
 
   const filteredPlaces = useMemo(() => {
@@ -47,7 +47,7 @@ function ExplorePage() {
       const matchesRegion =
         selectedRegion === "All" || place.region === selectedRegion;
 
-      const matchesSearch = place.name
+      const matchesSearch = (place.name || "")
         .toLowerCase()
         .includes(search.toLowerCase());
 
@@ -59,7 +59,7 @@ function ExplorePage() {
     const sorted = [...filteredPlaces];
 
     if (sortBy === "az") {
-      sorted.sort((a, b) => a.name.localeCompare(b.name));
+      sorted.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     } else if (sortBy === "free") {
       sorted.sort((a, b) => {
         const aFree = a.price?.toLowerCase() === "free" ? 0 : 1;
@@ -236,17 +236,16 @@ function ExplorePage() {
 
         <section className="explore-results-section">
           <div className="results-count">
-            {sortedPlaces.length} place
-            {sortedPlaces.length !== 1 ? "s" : ""} found
+            {sortedPlaces.length} place{sortedPlaces.length !== 1 ? "s" : ""} found
           </div>
 
           <div className="card-grid explore-card-grid">
             {visiblePlaces.length > 0 ? (
               visiblePlaces.map((place) => (
                 <PlaceCard
-                  key={place.id}
+                  key={place._id}
                   place={place}
-                  isSelected={selectedPlace?.id === place.id}
+                  isSelected={selectedPlace?._id === place._id}
                   onClick={() => setSelectedPlace(place)}
                 />
               ))

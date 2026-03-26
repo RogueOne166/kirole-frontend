@@ -14,20 +14,16 @@ function EventDetailPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const eventsRes = await api.get("/events?limit=100");
-        const placesRes = await api.get("/places?limit=100");
-
-        const eventsData = Array.isArray(eventsRes.data)
-          ? eventsRes.data
-          : eventsRes.data.data || [];
+        const [eventRes, placesRes] = await Promise.all([
+          api.get(`/events/${id}`),
+          api.get("/places?limit=100"),
+        ]);
 
         const placesData = Array.isArray(placesRes.data)
           ? placesRes.data
           : placesRes.data.data || [];
 
-        const selectedEvent = eventsData.find((e) => e.id === Number(id));
-
-        setEvent(selectedEvent || null);
+        setEvent(eventRes.data || null);
         setPlaces(placesData);
       } catch (error) {
         console.error("Error loading event details:", error);
@@ -41,7 +37,26 @@ function EventDetailPage() {
 
   const relatedPlace = useMemo(() => {
     if (!event) return null;
-    return places.find((place) => place.id === event.placeId) || null;
+
+    if (event.placeId) {
+      return (
+        places.find(
+          (place) =>
+            place._id === event.placeId || String(place._id) === String(event.placeId)
+        ) || null
+      );
+    }
+
+    if (event.location) {
+      return (
+        places.find(
+          (place) =>
+            place.name?.toLowerCase() === event.location?.toLowerCase()
+        ) || null
+      );
+    }
+
+    return null;
   }, [event, places]);
 
   if (!event) {
@@ -65,8 +80,8 @@ function EventDetailPage() {
     event.latitude && event.longitude
       ? [
           {
-            id: event.id,
-            name: event.name || event.title,
+            _id: event._id,
+            name: event.title,
             category: event.category || "event",
             region: event.region || "",
             latitude: event.latitude,
@@ -77,8 +92,7 @@ function EventDetailPage() {
       ? [relatedPlace]
       : [];
 
-  const selectedMapPlace =
-    mapPlaces.length > 0 ? mapPlaces[0] : null;
+  const selectedMapPlace = mapPlaces.length > 0 ? mapPlaces[0] : null;
 
   return (
     <div className="app-shell">
@@ -93,10 +107,10 @@ function EventDetailPage() {
 
         <section className="detail-hero">
           <div className="detail-image">
-            <img src={event.image} alt={event.name || event.title} />
+            <img src={event.image} alt={event.title} />
             <div className="detail-image-overlay">
               <span className="detail-badge">{event.category || "event"}</span>
-              <h1 className="detail-title">{event.name || event.title}</h1>
+              <h1 className="detail-title">{event.title}</h1>
               <div className="detail-meta">
                 {event.region && <span>📍 {event.region}</span>}
                 {event.date && <span>📅 {event.date}</span>}
@@ -111,7 +125,7 @@ function EventDetailPage() {
             <h2>About this event</h2>
             <p className="detail-description">{event.description}</p>
 
-            {event.audience && (
+            {event.audience?.length > 0 && (
               <div className="audience">
                 {event.audience.map((item, index) => (
                   <span className="chip" key={index}>
@@ -131,7 +145,7 @@ function EventDetailPage() {
                 <strong>{relatedPlace.name}</strong>
               </p>
               <p className="detail-description">{relatedPlace.description}</p>
-              <Link to={`/place/${relatedPlace.id}`} className="back-link">
+              <Link to={`/place/${relatedPlace._id}`} className="back-link">
                 View place details →
               </Link>
             </div>

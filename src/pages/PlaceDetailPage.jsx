@@ -15,20 +15,14 @@ function PlaceDetailPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const placesRes = await api.get("/places?limit=100");
+        const placeRes = await api.get(`/places/${id}`);
         const eventsRes = await api.get("/events?limit=100");
-
-        const placesData = Array.isArray(placesRes.data)
-          ? placesRes.data
-          : placesRes.data.data || [];
 
         const eventsData = Array.isArray(eventsRes.data)
           ? eventsRes.data
           : eventsRes.data.data || [];
 
-        const selectedPlace = placesData.find((p) => p.id === Number(id));
-
-        setPlace(selectedPlace || null);
+        setPlace(placeRes.data || null);
         setEvents(eventsData);
       } catch (error) {
         console.error("Error loading place details:", error);
@@ -42,7 +36,12 @@ function PlaceDetailPage() {
 
   const relatedEvents = useMemo(() => {
     if (!place) return [];
-    return events.filter((event) => event.placeId === place.id);
+
+    return events.filter(
+      (event) =>
+        event.placeId === place._id ||
+        String(event.placeId) === String(place._id)
+    );
   }, [events, place]);
 
   if (!place) {
@@ -118,7 +117,7 @@ function PlaceDetailPage() {
           <div className="card-grid">
             {relatedEvents.length > 0 ? (
               relatedEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
+                <EventCard key={event._id} event={event} />
               ))
             ) : (
               <p>No events available for this place yet.</p>

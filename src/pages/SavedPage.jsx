@@ -21,7 +21,15 @@ function SavedPage() {
 
       try {
         const res = await api.get("/favorites");
-        setPlaces(res.data.places || []);
+
+        // Supports both:
+        // 1) { places: [...] }
+        // 2) plain array [...]
+        const favoritePlaces = Array.isArray(res.data)
+          ? res.data
+          : res.data.places || [];
+
+        setPlaces(favoritePlaces);
       } catch (error) {
         console.error("Error fetching saved places:", error.response?.data || error);
         setPlaces([]);
@@ -64,7 +72,7 @@ function SavedPage() {
           ) : (
             <div className="card-grid">
               {places.length > 0 ? (
-                places.map((place) => <PlaceCard key={place.id} place={place} />)
+                places.map((place) => <PlaceCard key={place._id} place={place} />)
               ) : (
                 <p>You haven’t saved any places yet.</p>
               )}

@@ -30,10 +30,17 @@ function LoginPage() {
     setSubmitting(true);
 
     try {
-      const res = await api.post("/auth/login", form);
+      const payload = {
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+      };
+
+      const res = await api.post("/auth/login", payload);
       login(res.data);
 
-      if (res.data.user?.role === "organizer") {
+      if (res.data.user?.role === "admin") {
+        navigate("/admin");
+      } else if (res.data.user?.role === "organizer") {
         navigate("/organizer/dashboard");
       } else {
         navigate("/");

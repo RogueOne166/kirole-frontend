@@ -12,9 +12,10 @@ function EventsPage() {
     const fetchEvents = async () => {
       try {
         const res = await api.get("/events");
-        setEvents(res.data.data);
+        setEvents(Array.isArray(res.data) ? res.data : res.data.data || []);
       } catch (error) {
         console.error("Error fetching events:", error);
+        setEvents([]);
       }
     };
 
@@ -33,9 +34,11 @@ function EventsPage() {
 
         <section className="section">
           <div className="card-grid">
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
+            {events.length > 0 ? (
+              events.map((event) => <EventCard key={event._id} event={event} />)
+            ) : (
+              <p>No events found.</p>
+            )}
           </div>
         </section>
       </main>

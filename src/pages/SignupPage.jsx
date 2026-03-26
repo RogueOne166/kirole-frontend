@@ -36,21 +36,31 @@ function SignupPage() {
 
     try {
       const payload = {
-        name: form.name,
-        email: form.email,
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
         password: form.password,
         role: form.role,
       };
 
       if (form.role === "organizer") {
-        payload.companyName = form.companyName;
+        const companyName = form.companyName.trim();
+
+        if (!companyName) {
+          setError("Company name is required for organizers.");
+          setSubmitting(false);
+          return;
+        }
+
+        payload.companyName = companyName;
       }
 
       const res = await api.post("/auth/signup", payload);
 
       login(res.data);
 
-      if (res.data.user?.role === "organizer") {
+      if (res.data.user?.role === "admin") {
+        navigate("/admin");
+      } else if (res.data.user?.role === "organizer") {
         navigate("/organizer/dashboard");
       } else {
         navigate("/");

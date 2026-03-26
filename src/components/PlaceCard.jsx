@@ -10,26 +10,32 @@ function PlaceCard({ place, onClick, isSelected }) {
 
   useEffect(() => {
     const checkFavorite = async () => {
-      if (!isAuthenticated) {
+      if (!isAuthenticated || !place?._id) {
         setFavorite(false);
         return;
       }
 
       try {
         const res = await api.get("/favorites");
-        const favoritePlaces = res.data.places || [];
-        setFavorite(favoritePlaces.some((item) => item.id === place.id));
+        const favoritePlaces = Array.isArray(res.data)
+          ? res.data
+          : res.data.places || [];
+
+        setFavorite(
+          favoritePlaces.some((item) => item._id === place._id)
+        );
       } catch (error) {
         console.error("Error checking favorite:", error.response?.data || error);
+        setFavorite(false);
       }
     };
 
     checkFavorite();
-  }, [place.id, isAuthenticated]);
+  }, [place?._id, isAuthenticated]);
 
   const handleCardClick = () => {
     if (onClick) onClick();
-    navigate(`/place/${place.id}`);
+    navigate(`/place/${place._id}`);
   };
 
   const handleFavoriteClick = async (e) => {
@@ -42,10 +48,10 @@ function PlaceCard({ place, onClick, isSelected }) {
 
     try {
       if (favorite) {
-        await api.delete(`/favorites/places/${place.id}`);
+        await api.delete(`/favorites/places/${place._id}`);
         setFavorite(false);
       } else {
-        await api.post(`/favorites/places/${place.id}`);
+        await api.post(`/favorites/places/${place._id}`);
         setFavorite(true);
       }
     } catch (error) {
