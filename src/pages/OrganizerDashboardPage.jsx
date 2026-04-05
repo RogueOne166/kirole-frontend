@@ -10,18 +10,20 @@ function OrganizerDashboardPage() {
       <Navbar />
 
       <main className="main-content page-top-spacing">
-        <div className="auth-card">
-          <h1 className="auth-title">
-            Welcome {user?.name || "Organizer"}
-          </h1>
+        <div className="company-dashboard">
+          <div className="company-dashboard-card">
+            <h1 className="company-dashboard-title">
+              Welcome {user?.name || "Organizer"}
+            </h1>
 
-          <p className="auth-subtitle">
-            This is your organizer dashboard.
-          </p>
+            <p className="company-dashboard-subtitle">
+              This is your organizer dashboard.
+            </p>
 
-          <p>
-            Company: {user?.companyName || "Not set"}
-          </p>
+            <p className="company-dashboard-company">
+              Company: {user?.companyName || "Not set"}
+            </p>
+          </div>
         </div>
       </main>
 
