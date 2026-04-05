@@ -9,6 +9,7 @@ import SavedPage from "./pages/SavedPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import OrganizerDashboardPage from "./pages/OrganizerDashboardPage";
 import "./App.css";
 
 function App() {
@@ -20,6 +21,14 @@ function App() {
       <Route path="/events" element={<EventsPage />} />
       <Route path="/place/:id" element={<PlaceDetailPage />} />
       <Route path="/event/:id" element={<EventDetailPage />} />
+      <Route
+  		path="/organizer/dashboard"
+  		element={
+    		<ProtectedRoute>
+      		<OrganizerDashboardPage />
+    		</ProtectedRoute>
+  		}
+      />
       <Route
         path="/saved"
         element={
