@@ -30,7 +30,7 @@ function Navbar() {
         <Link to="/explore">Explore</Link>
         <Link to="/featured">Featured</Link>
         <Link to="/events">Events</Link>
-        <Link to="/saved">Saved</Link>
+        <Link to="/saved">Favorites</Link>
 
         {isAuthenticated ? (
           <>
