@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../context/AuthContext";
-import api from "../api";
+import api from "../services/api";
 
 function OrganizerDashboardPage() {
   const { user } = useAuth();
